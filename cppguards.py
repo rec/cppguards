@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function
+
+# Don't include unicode_literals to improve legacy code.
 
 import argparse
 import os
@@ -27,6 +29,12 @@ PARSER.add_argument(
     '--continue',
     action='store_true',
     help="Keep going even if there's an error in one file.",
+)
+
+PARSER.add_argument(
+    '--repeats',
+    action='store_true',
+    help='Keep repeated directories in the guard.',
 )
 
 PARSER.add_argument(
@@ -84,6 +92,10 @@ def get_guard(fname):
     fname = os.path.abspath(fname)
     root, path = _find_root(fname)
     path = [p for p in path if p not in SKIPPED_NAMES]
+
+    if not ARGS.repeats:
+        path = [p for (i, p) in enumerate(path)
+                if not (i and path[i] == path[i - 1])]
 
     path[-1], extensions = _remove_extensions(path[-1])
     assert extensions[-1] == '.h'
