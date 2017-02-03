@@ -98,10 +98,12 @@ def get_guard(fname):
                 if not (i and path[i] == path[i - 1])]
 
     path[-1], extensions = _remove_extensions(path[-1])
+    assert extensions, ', '.join((fname, root, str(path)))
     assert extensions[-1] == '.h'
 
     path.append(ARGS.suffix)
     return '_'.join(p.upper() for p in path).replace('-', '_')
+
 
 def add_guards(fname):
     guard = get_guard(fname)
@@ -125,6 +127,7 @@ def add_guards(fname):
             raise e
 
     open(fname, 'w').writelines(contents)
+
 
 if __name__ == '__main__':
     for f in ARGS.files:
